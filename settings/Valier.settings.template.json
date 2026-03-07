@@ -1,0 +1,13 @@
+{
+  "username": "",
+  "password": "",
+  "ip": "YOUR_SERVER_IP_OR_HOSTNAME",
+  "port": 2593,
+  "ultimaonlinedirectory": "",
+  "clientversion": "7.0.0.0",
+  "saveaccount": false,
+  "autologin": false,
+  "reconnect": true,
+  "reconnect_time": 3,
+  "plugins": []
+}
