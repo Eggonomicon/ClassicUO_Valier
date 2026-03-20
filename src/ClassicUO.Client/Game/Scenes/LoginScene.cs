@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: BSD-2-Clause
+// SPDX-License-Identifier: BSD-2-Clause
 
 using ClassicUO.Configuration;
 using ClassicUO.Game.Data;
@@ -46,6 +46,8 @@ namespace ClassicUO.Game.Scenes
         private int _reconnectTryCounter = 1;
         private bool _autoLogin;
         private readonly World _world;
+        private const int LOGIN_CANVAS_WIDTH = 640;
+        private const int LOGIN_CANVAS_HEIGHT = 480;
 
         public LoginScene(World world) => _world = world;
 
@@ -67,12 +69,13 @@ namespace ClassicUO.Game.Scenes
         {
             base.Load();
 
-            Client.Game.Window.AllowUserResizing = false;
+            Client.Game.Window.AllowUserResizing = true;
 
             _autoLogin = Settings.GlobalSettings.AutoLogin;
 
             UIManager.Add(new LoginBackground(_world));
             UIManager.Add(_currentGump = new LoginGump(_world, this));
+            UpdateLoginCanvasLayout();
 
             Client.Game.Audio.PlayMusic(Client.Game.Audio.LoginMusicIndex, false, true);
 
@@ -86,15 +89,17 @@ namespace ClassicUO.Game.Scenes
                 }
             }
 
-            if (Client.Game.IsWindowMaximized())
-            {
-                Client.Game.RestoreWindow();
-            }
+            int minWidth = Client.Game.ScaleWithDpi(LOGIN_CANVAS_WIDTH);
+            int minHeight = Client.Game.ScaleWithDpi(LOGIN_CANVAS_HEIGHT);
+            SDL.SDL_SetWindowMinimumSize(Client.Game.Window.Handle, minWidth, minHeight);
 
-            int width = Client.Game.ScaleWithDpi(640);
-            int height = Client.Game.ScaleWithDpi(480);
-            SDL.SDL_SetWindowMinimumSize(Client.Game.Window.Handle, width, height);
-            Client.Game.SetWindowSize(width, height);
+            int targetWidth = Math.Max(Client.Game.Window.ClientBounds.Width, minWidth);
+            int targetHeight = Math.Max(Client.Game.Window.ClientBounds.Height, minHeight);
+
+            if (Client.Game.Window.ClientBounds.Width != targetWidth || Client.Game.Window.ClientBounds.Height != targetHeight)
+            {
+                Client.Game.SetWindowSize(targetWidth, targetHeight);
+            }
         }
 
 
@@ -136,6 +141,8 @@ namespace ClassicUO.Game.Scenes
                 _lastLoginStep = CurrentLoginStep;
             }
 
+            UpdateLoginCanvasLayout();
+
             if (Reconnect && (CurrentLoginStep == LoginSteps.PopUpMessage || CurrentLoginStep == LoginSteps.Main) && !NetClient.Socket.IsConnected)
             {
                 if (_reconnectTime < Time.Ticks)
@@ -172,6 +179,17 @@ namespace ClassicUO.Game.Scenes
 
                 _pingTime = Time.Ticks + 60000;
             }
+        }
+
+        private void UpdateLoginCanvasLayout()
+        {
+            if (_currentGump == null || _currentGump.IsDisposed)
+            {
+                return;
+            }
+
+            _currentGump.X = Math.Max(0, (Client.Game.ClientBounds.Width - LOGIN_CANVAS_WIDTH) / 2);
+            _currentGump.Y = Math.Max(0, (Client.Game.ClientBounds.Height - LOGIN_CANVAS_HEIGHT) / 2);
         }
 
         private Gump GetGumpForStep()
