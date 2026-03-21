@@ -566,12 +566,11 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 int maxWidth = 0,
                 bool isunicode = true,
                 FontStyle style = FontStyle.None,
-                ushort hue = 0,
-                TEXT_ALIGN_TYPE align = TEXT_ALIGN_TYPE.TS_LEFT
-            ) : base(font, maxCharCount, maxWidth, isunicode, style, hue, align)
+                ushort hue = 0
+            ) : base(font, maxCharCount, maxWidth, isunicode, style, hue)
             {
-                _rendererText = RenderedText.Create(string.Empty, hue, font, isunicode, style, align, maxWidth);
-                _rendererCaret = RenderedText.Create("_", hue, font, isunicode, (style & FontStyle.BlackBorder) != 0 ? FontStyle.BlackBorder : FontStyle.None, align);
+                _rendererText = RenderedText.Create(string.Empty, hue, font, isunicode, style, maxWidth: maxWidth);
+                _rendererCaret = RenderedText.Create("_", hue, font, isunicode, (style & FontStyle.BlackBorder) != 0 ? FontStyle.BlackBorder : FontStyle.None);
                 NoSelection = true;
             }
 
