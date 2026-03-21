@@ -210,8 +210,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
             Width = windowWidth;
             Height = windowHeight;
 
-            int panelWidth = Math.Clamp((int)(windowWidth * 0.60f), 760, 1120);
-            int panelHeight = Math.Clamp((int)(windowHeight * 0.62f), 420, 760);
+            int panelWidth = System.Math.Clamp((int)(windowWidth * 0.60f), 760, 1120);
+            int panelHeight = System.Math.Clamp((int)(windowHeight * 0.62f), 420, 760);
 
             int panelX = (windowWidth - panelWidth) / 2;
             int panelY = (windowHeight - panelHeight) / 2;
@@ -333,10 +333,10 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 _serverName.X = 18;
                 _serverName.Y = 8;
 
-                _serverPing.X = Math.Max(Width - 210, 260);
+                _serverPing.X = System.Math.Max(Width - 210, 260);
                 _serverPing.Y = 8;
 
-                _serverPacketLoss.X = Math.Max(Width - 100, 360);
+                _serverPacketLoss.X = System.Math.Max(Width - 100, 360);
                 _serverPacketLoss.Y = 8;
             }
 

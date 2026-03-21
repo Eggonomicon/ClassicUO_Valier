@@ -447,8 +447,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
             Width = windowWidth;
             Height = windowHeight;
 
-            int panelWidth = Math.Clamp((int)(windowWidth * 0.52f), 720, 980);
-            int panelHeight = Math.Clamp((int)(windowHeight * 0.44f), 340, 430);
+            int panelWidth = System.Math.Clamp((int)(windowWidth * 0.52f), 720, 980);
+            int panelHeight = System.Math.Clamp((int)(windowHeight * 0.44f), 340, 430);
 
             int panelX = (windowWidth - panelWidth) / 2;
             int panelY = (windowHeight - panelHeight) / 2;
