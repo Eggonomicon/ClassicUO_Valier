@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: BSD-2-Clause
 
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
+using ClassicUO.Assets;
 using ClassicUO.Configuration;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Controls;
@@ -12,144 +14,83 @@ using SDL3;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
-    internal class ServerSelectionGump : Gump
+    internal sealed class ServerSelectionGump : Gump
     {
         private const ushort SELECTED_COLOR = 0x0021;
-        private const ushort NORMAL_COLOR = 0x034F;
+        private const ushort NORMAL_COLOR = 0x0481;
+        private const int PANEL_WIDTH = 720;
+        private const int PANEL_HEIGHT = 470;
+        private const int RIGHT_MARGIN = 36;
 
-        private readonly Label _headerLabel;
-        private readonly Label _hintLabel;
-        private readonly Button _nextButton;
-        private readonly AlphaBlendControl _panelShade;
-        private readonly ResizePic _panelFrame;
-        private readonly Button _prevButton;
-        private readonly ScrollArea _scrollArea;
-        private readonly DataBox _serverBox;
-        private readonly Label _selectedServerLabel;
-        private readonly ServerEntryGump[] _serverEntries;
-        private readonly Label _subHeaderLabel;
-
-        private int _lastWindowHeight;
-        private int _lastWindowWidth;
+        private int _lastBoundsWidth = -1;
+        private int _lastBoundsHeight = -1;
 
         public ServerSelectionGump(World world) : base(world, 0, 0)
         {
-            WantUpdateSize = false;
+            Add(new TextureImageControl(Loader.GetValierServerFrame(), PANEL_WIDTH, PANEL_HEIGHT));
+            Add(new TextureImageControl(Loader.GetCuoLogo(), 86, 86) { X = 34, Y = 24 });
+
+            Add(new Label("Choose your shard", false, 0x0481, font: 9) { X = 130, Y = 38 });
+            Add(new Label("ValierUO server selection", false, 0x0481, font: 9) { X = 130, Y = 74 });
+            Add(new Label("Double-click a shard or press Enter to continue.", false, 0x0481, font: 9) { X = 42, Y = 118 });
+
+            Add(new Label("Shard", false, 0x0481, font: 9) { X = 58, Y = 160 });
+            Add(new Label("Latency", false, 0x0481, font: 9) { X = 530, Y = 160 });
+            Add(new Label("Loss", false, 0x0481, font: 9) { X = 616, Y = 160 });
+
+            ScrollArea scrollArea = new ScrollArea(48, 188, 624, 156, true);
+            DataBox databox = new DataBox(0, 0, 1, 1) { WantUpdateSize = true };
+            LoginScene loginScene = Client.Game.GetScene<LoginScene>();
+
+            scrollArea.ScissorRectangle.Y = 8;
+            scrollArea.ScissorRectangle.Height = -16;
+
+            foreach (ServerListEntry server in loginScene.Servers)
+            {
+                databox.Add(new ServerEntryControl(server, 9, NORMAL_COLOR, SELECTED_COLOR));
+            }
+
+            databox.ReArrangeChildren();
+
+            Add(scrollArea);
+            scrollArea.Add(databox);
+
+            if (loginScene.Servers.Length != 0)
+            {
+                int index = loginScene.GetServerIndexFromSettings();
+                Add(new Label($"Current shard: {loginScene.Servers[index].Name}", false, 0x0481, font: 9) { X = 46, Y = 390 });
+            }
+
+            Add(new ImageButtonControl((int)Buttons.Quit, Loader.GetValierQuitButton()) { X = 576, Y = 346 });
+
             AcceptKeyboardInput = true;
             CanCloseWithRightClick = false;
 
-            LoginScene loginScene = Client.Game.GetScene<LoginScene>();
-
-            Add
-            (
-                _panelShade = new AlphaBlendControl(0.52f)
-                {
-                    X = 0,
-                    Y = 0,
-                    Width = 100,
-                    Height = 100
-                }
-            );
-
-            Add
-            (
-                _panelFrame = new ResizePic(0x13BE)
-                {
-                    X = 0,
-                    Y = 0,
-                    Width = 100,
-                    Height = 100
-                }
-            );
-
-            Add
-            (
-                _headerLabel = new Label("Choose your shard", false, 0x0481, font: 9)
-                {
-                    X = 0,
-                    Y = 0
-                }
-            );
-
-            Add
-            (
-                _subHeaderLabel = new Label("ValierUO server selection", false, 0x0481, font: 9)
-                {
-                    X = 0,
-                    Y = 0
-                }
-            );
-
-            Add
-            (
-                _hintLabel = new Label("Double-click a shard or press Enter to continue.", false, 0x034F, font: 9)
-                {
-                    X = 0,
-                    Y = 0
-                }
-            );
-
-            Add
-            (
-                _selectedServerLabel = new Label(string.Empty, false, 0x0481, font: 9)
-                {
-                    X = 0,
-                    Y = 0
-                }
-            );
-
-            _scrollArea = new ScrollArea(0, 0, 100, 100, true);
-            _scrollArea.ScissorRectangle.Y = 12;
-            _scrollArea.ScissorRectangle.Height = -24;
-
-            _serverBox = new DataBox(0, 0, 1, 1) { WantUpdateSize = true };
-            _serverEntries = loginScene.Servers.Select(s => new ServerEntryGump(s, 9, NORMAL_COLOR, SELECTED_COLOR)).ToArray();
-
-            foreach (ServerEntryGump entry in _serverEntries)
-            {
-                _serverBox.Add(entry);
-            }
-
-            _serverBox.ReArrangeChildren();
-
-            Add(_scrollArea);
-            _scrollArea.Add(_serverBox);
-
-            Add
-            (
-                _prevButton = new Button((int)Buttons.Prev, 0x05CA, 0x05C9, 0x05C8)
-                {
-                    X = 0,
-                    Y = 0,
-                    ButtonAction = ButtonAction.Activate
-                }
-            );
-
-            Add
-            (
-                _nextButton = new Button((int)Buttons.Next, 0x05CD, 0x05CC, 0x05CB)
-                {
-                    X = 0,
-                    Y = 0,
-                    ButtonAction = ButtonAction.Activate
-                }
-            );
-
-            UpdateLayout(force: true);
+            UpdatePanelPosition();
         }
 
         public override void Update()
         {
             base.Update();
-            UpdateLayout();
+            UpdatePanelPosition();
+            Client.Game.Window.Title = $"ValierUO - {CUOEnviroment.Version}";
+        }
 
-            LoginScene loginScene = Client.Game.GetScene<LoginScene>();
+        private void UpdatePanelPosition()
+        {
+            int width = Client.Game.ClientBounds.Width;
+            int height = Client.Game.ClientBounds.Height;
 
-            if (loginScene.Servers.Length != 0)
+            if (_lastBoundsWidth == width && _lastBoundsHeight == height)
             {
-                int index = loginScene.GetServerIndexFromSettings();
-                _selectedServerLabel.Text = $"Current shard: {loginScene.Servers[index].Name}";
+                return;
             }
+
+            _lastBoundsWidth = width;
+            _lastBoundsHeight = height;
+
+            X = System.Math.Max(20, width - PANEL_WIDTH - RIGHT_MARGIN);
+            Y = System.Math.Max(20, (height - PANEL_HEIGHT) / 2);
         }
 
         public override void OnButtonClick(int buttonID)
@@ -165,15 +106,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
 
             switch ((Buttons)buttonID)
             {
-                case Buttons.Next:
-                    if (loginScene.Servers.Length != 0)
-                    {
-                        int index = loginScene.GetServerIndexFromSettings();
-                        loginScene.SelectServer((byte)loginScene.Servers[index].Index);
-                    }
-
-                    break;
-
+                case Buttons.Quit:
                 case Buttons.Prev:
                     loginScene.StepBack();
                     break;
@@ -194,95 +127,23 @@ namespace ClassicUO.Game.UI.Gumps.Login
             }
         }
 
-        private void UpdateLayout(bool force = false)
-        {
-            int windowWidth = Client.Game.Window.ClientBounds.Width;
-            int windowHeight = Client.Game.Window.ClientBounds.Height;
-
-            if (!force && windowWidth == _lastWindowWidth && windowHeight == _lastWindowHeight)
-            {
-                return;
-            }
-
-            _lastWindowWidth = windowWidth;
-            _lastWindowHeight = windowHeight;
-
-            Width = windowWidth;
-            Height = windowHeight;
-
-            int panelWidth = System.Math.Clamp((int)(windowWidth * 0.60f), 760, 1120);
-            int panelHeight = System.Math.Clamp((int)(windowHeight * 0.62f), 420, 760);
-
-            int panelX = (windowWidth - panelWidth) / 2;
-            int panelY = (windowHeight - panelHeight) / 2;
-
-            _panelShade.X = panelX;
-            _panelShade.Y = panelY;
-            _panelShade.Width = panelWidth;
-            _panelShade.Height = panelHeight;
-
-            _panelFrame.X = panelX;
-            _panelFrame.Y = panelY;
-            _panelFrame.Width = panelWidth;
-            _panelFrame.Height = panelHeight;
-
-            _headerLabel.X = panelX + 28;
-            _headerLabel.Y = panelY + 20;
-
-            _subHeaderLabel.X = panelX + 30;
-            _subHeaderLabel.Y = panelY + 48;
-
-            _hintLabel.X = panelX + 30;
-            _hintLabel.Y = panelY + 76;
-
-            int listX = panelX + 30;
-            int listY = panelY + 108;
-            int listWidth = panelWidth - 60;
-            int listHeight = panelHeight - 180;
-
-            _scrollArea.X = listX;
-            _scrollArea.Y = listY;
-            _scrollArea.Width = listWidth;
-            _scrollArea.Height = listHeight;
-            _scrollArea.ScissorRectangle.Y = 12;
-            _scrollArea.ScissorRectangle.Height = -24;
-
-            _serverBox.Width = listWidth - 24;
-
-            foreach (ServerEntryGump entry in _serverEntries)
-            {
-                entry.SetLayout(_serverBox.Width - 12);
-            }
-
-            _serverBox.ReArrangeChildren();
-
-            _selectedServerLabel.X = panelX + 30;
-            _selectedServerLabel.Y = panelY + panelHeight - 52;
-
-            _prevButton.X = panelX + panelWidth - 118;
-            _prevButton.Y = panelY + panelHeight - 64;
-
-            _nextButton.X = panelX + panelWidth - 62;
-            _nextButton.Y = panelY + panelHeight - 60;
-        }
-
         private enum Buttons
         {
-            Prev,
-            Next,
-            Server = 100
+            Prev = 1,
+            Quit = 2,
+            Server = 99
         }
 
-        private class ServerEntryGump : Control
+        private sealed class ServerEntryControl : Control
         {
             private readonly int _buttonId;
             private readonly ServerListEntry _entry;
-            private readonly HoveredLabel _serverName;
-            private readonly HoveredLabel _serverPacketLoss;
+            private readonly HoveredLabel _serverLoss;
             private readonly HoveredLabel _serverPing;
+            private readonly HoveredLabel _serverName;
             private uint _pingCheckTime;
 
-            public ServerEntryGump(ServerListEntry entry, byte font, ushort normalHue, ushort selectedHue)
+            public ServerEntryControl(ServerListEntry entry, byte font, ushort normalHue, ushort selectedHue)
             {
                 _entry = entry;
                 _buttonId = entry.Index;
@@ -291,8 +152,8 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     _serverName = new HoveredLabel(entry.Name, false, normalHue, selectedHue, selectedHue, font: font)
                     {
-                        X = 16,
-                        Y = 8,
+                        X = 10,
+                        Y = 4,
                         AcceptMouseInput = false
                     }
                 );
@@ -301,50 +162,33 @@ namespace ClassicUO.Game.UI.Gumps.Login
                 (
                     _serverPing = new HoveredLabel(CUOEnviroment.NoServerPing ? string.Empty : "-", false, normalHue, selectedHue, selectedHue, font: font)
                     {
-                        X = 0,
-                        Y = 8,
+                        X = 482,
+                        Y = 4,
                         AcceptMouseInput = false
                     }
                 );
 
                 Add
                 (
-                    _serverPacketLoss = new HoveredLabel(CUOEnviroment.NoServerPing ? string.Empty : "-", false, normalHue, selectedHue, selectedHue, font: font)
+                    _serverLoss = new HoveredLabel(CUOEnviroment.NoServerPing ? string.Empty : "-", false, normalHue, selectedHue, selectedHue, font: font)
                     {
-                        X = 0,
-                        Y = 8,
+                        X = 568,
+                        Y = 4,
                         AcceptMouseInput = false
                     }
                 );
 
                 AcceptMouseInput = true;
-                Width = 420;
-                Height = 34;
+                Width = 600;
+                Height = 32;
                 WantUpdateSize = false;
-
-                SetLayout(420);
-            }
-
-            public void SetLayout(int width)
-            {
-                Width = width;
-                Height = 34;
-
-                _serverName.X = 18;
-                _serverName.Y = 8;
-
-                _serverPing.X = System.Math.Max(Width - 210, 260);
-                _serverPing.Y = 8;
-
-                _serverPacketLoss.X = System.Math.Max(Width - 100, 360);
-                _serverPacketLoss.Y = 8;
             }
 
             protected override void OnMouseEnter(int x, int y)
             {
                 base.OnMouseEnter(x, y);
                 _serverName.IsSelected = true;
-                _serverPacketLoss.IsSelected = true;
+                _serverLoss.IsSelected = true;
                 _serverPing.IsSelected = true;
             }
 
@@ -352,7 +196,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             {
                 base.OnMouseExit(x, y);
                 _serverName.IsSelected = false;
-                _serverPacketLoss.IsSelected = false;
+                _serverLoss.IsSelected = false;
                 _serverPing.IsSelected = false;
             }
 
@@ -368,7 +212,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
             {
                 base.Update();
 
-                if (CUOEnviroment.NoServerPing == false && _pingCheckTime < Time.Ticks)
+                if (!CUOEnviroment.NoServerPing && _pingCheckTime < Time.Ticks)
                 {
                     _pingCheckTime = Time.Ticks + 2000;
                     _entry.DoPing();
@@ -378,7 +222,6 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         case IPStatus.Success:
                             _serverPing.Text = _entry.Ping == -1 ? "-" : _entry.Ping.ToString();
                             break;
-
                         case IPStatus.DestinationNetworkUnreachable:
                         case IPStatus.DestinationHostUnreachable:
                         case IPStatus.DestinationProtocolUnreachable:
@@ -386,17 +229,15 @@ namespace ClassicUO.Game.UI.Gumps.Login
                         case IPStatus.DestinationUnreachable:
                             _serverPing.Text = "unreach.";
                             break;
-
                         case IPStatus.TimedOut:
                             _serverPing.Text = "time out";
                             break;
-
                         default:
                             _serverPing.Text = $"unk. [{(int)_entry.PingStatus}]";
                             break;
                     }
 
-                    _serverPacketLoss.Text = $"{_entry.PacketLoss}%";
+                    _serverLoss.Text = $"{_entry.PacketLoss}%";
                 }
             }
         }

@@ -1,27 +1,27 @@
-﻿// SPDX-License-Identifier: BSD-2-Clause
+// SPDX-License-Identifier: BSD-2-Clause
 
 using ClassicUO.Game.UI.Controls;
+using ClassicUO.Resources;
 
 namespace ClassicUO.Game.UI.Gumps.Login
 {
-    internal class LoginBackground : Gump
+    internal sealed class LoginBackground : Gump
     {
-        private readonly AlphaBlendControl _overlay;
+        private readonly TextureImageControl _background;
 
         public LoginBackground(World world) : base(world, 0, 0)
         {
-            WantUpdateSize = false;
-            Width = Client.Game.Window.ClientBounds.Width;
-            Height = Client.Game.Window.ClientBounds.Height;
-
-            Add
+            _background = Add
             (
-                _overlay = new AlphaBlendControl(0.18f)
+                new TextureImageControl
+                (
+                    Loader.GetBackgroundImage(),
+                    Client.Game.ClientBounds.Width,
+                    Client.Game.ClientBounds.Height
+                )
                 {
-                    X = 0,
-                    Y = 0,
-                    Width = Width,
-                    Height = Height
+                    AcceptKeyboardInput = false,
+                    AcceptMouseInput = false
                 }
             );
 
@@ -36,28 +36,15 @@ namespace ClassicUO.Game.UI.Gumps.Login
         {
             base.Update();
 
-            int width = Client.Game.Window.ClientBounds.Width;
-            int height = Client.Game.Window.ClientBounds.Height;
+            X = 0;
+            Y = 0;
+            Width = Client.Game.ClientBounds.Width;
+            Height = Client.Game.ClientBounds.Height;
 
-            if (Width != width)
-            {
-                Width = width;
-            }
+            _background.Width = Width;
+            _background.Height = Height;
 
-            if (Height != height)
-            {
-                Height = height;
-            }
-
-            if (_overlay.Width != width)
-            {
-                _overlay.Width = width;
-            }
-
-            if (_overlay.Height != height)
-            {
-                _overlay.Height = height;
-            }
+            Client.Game.Window.Title = $"ValierUO - {CUOEnviroment.Version}";
         }
     }
 }
