@@ -70,7 +70,7 @@ namespace ClassicUO.Game.UI.Gumps.Login
                     Height = 28
                 }
             );
-            _passwordFake.RealText = ClassicUO.IO.Crypter.Decrypt(Settings.GlobalSettings.Password);
+            _passwordFake.RealText = ClassicUO.Utility.Crypter.Decrypt(Settings.GlobalSettings.Password);
 
             Add(_quitButton = new ImageButtonControl((int)Buttons.Quit, Loader.GetValierQuitButton()) { X = 36, Y = 294 });
             Add(_creditsButton = new ImageButtonControl((int)Buttons.Credits, Loader.GetValierCreditsButton()) { X = 172, Y = 311 });
