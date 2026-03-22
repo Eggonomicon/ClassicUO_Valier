@@ -1,0 +1,6 @@
+docs/Custom_Gumps_Plan.md
+docs/Integration_Order.md
+docs/Phase3C_Implementation_Map.md
+docs/Repo_Targeting_Notes.md
+maps/asset_to_classicuo_targets.csv
+maps/asset_to_classicuo_targets.json

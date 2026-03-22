@@ -1,0 +1,6 @@
+{
+  "channel": "stable",
+  "manifest_url": "https://YOUR-DOMAIN/valier-client/latest.json",
+  "release_base_url": "https://YOUR-DOMAIN/valier-client/files/",
+  "bootstrap_exe": "ValierClassicUO.exe"
+}

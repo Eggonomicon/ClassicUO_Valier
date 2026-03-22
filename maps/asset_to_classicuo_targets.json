@@ -1,0 +1,102 @@
+{
+  "textures": {
+    "login": [
+      "LoginUI/login_frame_card.png"
+    ],
+    "inventory": [
+      "Inventory/inventory_grid_6x6.png",
+      "Inventory/reagent_bag_frame.png",
+      "Inventory/container_chest_open.png",
+      "Inventory/container_frame_window_tall.png"
+    ],
+    "spellbook": [
+      "Spellbook/spellbook_open_clean_reference.png",
+      "Spellbook/spellbook_open_base_from_sheet.png"
+    ],
+    "chat": [
+      "Chat/chat_input_frame.png",
+      "Chat/chat_input_thumb.png",
+      "Chat/chat_scrollbar_vertical_track.png",
+      "Chat/chat_scrollbar_horizontal_track.png",
+      "Chat/chat_scrollbar_horizontal_thumb.png"
+    ],
+    "hotbars": [
+      "Hotbars/hotbar_8slot.png",
+      "Hotbars/hotbar_8slot_alt.png",
+      "Hotbars/hotbar_8slot_active.png"
+    ]
+  },
+  "panels": {
+    "login": [
+      "LoginUI/login_panel_main.png"
+    ],
+    "inventory": [
+      "Inventory/container_side_panel_tall.png"
+    ],
+    "chat": [
+      "Chat/chat_frame_concept.png"
+    ]
+  },
+  "buttons": {
+    "primary": [
+      "LoginUI/login_button_primary_a_idle.png",
+      "LoginUI/login_button_primary_a_hover.png",
+      "LoginUI/login_button_primary_a_pressed.png",
+      "LoginUI/login_button_primary_b_idle.png",
+      "LoginUI/login_button_primary_b_hover.png",
+      "LoginUI/login_button_primary_b_pressed.png"
+    ],
+    "danger": [
+      "LoginUI/login_button_quit_idle.png",
+      "LoginUI/login_button_quit_hover.png"
+    ]
+  },
+  "scalable_frames": {
+    "login": [
+      "LoginUI/login_panel_main_9slice/*"
+    ],
+    "inventory": [
+      "Inventory/container_side_panel_tall_9slice/*"
+    ],
+    "chat": [
+      "Chat/chat_frame_9slice/*"
+    ]
+  },
+  "custom_gumps": {
+    "ValierLoginGump": [
+      "LoginUI/login_panel_main.png",
+      "LoginUI/login_panel_main_9slice/*",
+      "LoginUI/login_button_primary_a_*",
+      "LoginUI/login_button_primary_b_*",
+      "LoginUI/login_button_quit_*",
+      "LoginUI/login_frame_card.png"
+    ],
+    "ValierPersistentChatGump": [
+      "Chat/chat_frame_concept.png",
+      "Chat/chat_frame_9slice/*",
+      "Chat/chat_input_frame.png",
+      "Chat/chat_input_thumb.png",
+      "Chat/chat_scrollbar_*"
+    ],
+    "ValierInventoryGump": [
+      "Inventory/inventory_grid_6x6.png",
+      "Inventory/container_side_panel_tall.png",
+      "Inventory/container_side_panel_tall_9slice/*",
+      "Inventory/container_frame_window_tall.png"
+    ],
+    "ValierContainerGump": [
+      "Inventory/reagent_bag_frame.png",
+      "Inventory/container_chest_open.png",
+      "Inventory/container_side_panel_tall_9slice/*"
+    ],
+    "ValierSpellbookGump": [
+      "Spellbook/spellbook_open_clean_reference.png",
+      "Spellbook/spellbook_open_base_from_sheet.png"
+    ],
+    "ValierHotbarGump": [
+      "Hotbars/hotbar_8slot.png",
+      "Hotbars/hotbar_8slot_alt.png",
+      "Hotbars/hotbar_8slot_active.png"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+category,asset,implementation_target,notes
+panel,LoginUI/login_panel_main.png,shared panel / login shell,fixed visual shell and source for 9-slice login frame
+scalable_frame,LoginUI/login_panel_main_9slice/*,resizable login frame,use for layout-safe login shell variants
+button,LoginUI/login_button_primary_a_*,primary action buttons,login/connect/confirm family
+button,LoginUI/login_button_primary_b_*,secondary action buttons,credits/options/minor actions
+button,LoginUI/login_button_quit_*,danger/exit buttons,quit/close/destructive action family
+texture,Inventory/inventory_grid_6x6.png,inventory texture shell,fixed-size inventory presentation
+texture,Inventory/reagent_bag_frame.png,bag gump texture,specialized container art
+texture,Inventory/container_chest_open.png,chest gump texture,specialized chest art
+panel,Inventory/container_side_panel_tall.png,container side shell,source for scalable container frame
+scalable_frame,Inventory/container_side_panel_tall_9slice/*,resizable container frame,shared container shell
+texture,Spellbook/spellbook_open_clean_reference.png,spellbook shell texture,preferred spellbook art
+texture,Spellbook/spellbook_open_base_from_sheet.png,spellbook shell fallback,fallback if clean reference not used
+panel,Chat/chat_frame_concept.png,chat shell,source for persistent chat frame
+scalable_frame,Chat/chat_frame_9slice/*,resizable chat frame,persistent chat body
+texture,Chat/chat_input_frame.png,chat input line,text entry frame
+texture,Chat/chat_input_thumb.png,chat lower rail,input/secondary rail
+texture,Hotbars/hotbar_8slot.png,hotbar base,default action rail
+texture,Hotbars/hotbar_8slot_alt.png,hotbar alt mode,alternate mode rail
+texture,Hotbars/hotbar_8slot_active.png,hotbar active mode,selected/active rail

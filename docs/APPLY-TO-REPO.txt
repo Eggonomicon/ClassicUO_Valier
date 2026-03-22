@@ -1,0 +1,7 @@
+1. Extract this zip somewhere safe.
+2. Copy everything inside overlay/ over the root of Eggonomicon/ClassicUO_Valier.
+3. Do not delete your existing branding files if they are already correct.
+4. Run from repo root:
+   powershell -ExecutionPolicy Bypass -File .\scripts\build_release_windows.ps1
+5. Distribute:
+   release\ValierClassicUOClient-win-x64.zip

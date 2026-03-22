@@ -1,0 +1,16 @@
+{
+  "source": "chat_frame_concept.png",
+  "slice_rect_pixels": {
+    "left": 28,
+    "top": 32,
+    "right": 28,
+    "bottom": 32
+  },
+  "safe_content_padding_pixels": {
+    "left": 28,
+    "top": 32,
+    "right": 28,
+    "bottom": 32
+  },
+  "notes": "v2 preserves original cropped artwork and outlines; no aggressive background stripping applied."
+}

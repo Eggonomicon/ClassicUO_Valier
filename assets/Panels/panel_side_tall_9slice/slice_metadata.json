@@ -1,0 +1,16 @@
+{
+  "source": "panel_side_tall.png",
+  "slice_rect_pixels": {
+    "left": 24,
+    "top": 40,
+    "right": 24,
+    "bottom": 40
+  },
+  "safe_content_padding_pixels": {
+    "left": 24,
+    "top": 40,
+    "right": 24,
+    "bottom": 40
+  },
+  "notes": "v2 preserves original cropped artwork and outlines; no aggressive background stripping applied."
+}
