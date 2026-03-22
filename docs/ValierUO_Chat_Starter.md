@@ -1,53 +1,54 @@
 # ValierUO Chat Starter
 
 PROJECT
-ValierUO custom ClassicUO fork and launcher/patcher project.
+ValierUO custom ClassicUO fork and patchable Windows-first client.
 
 REPO
-X:\UO\Client\Dev\ClassicUO_Valier
+`X:\UO\Client\Dev\ClassicUO_Valier`
 
 REPO LAYOUT
-- src
-- branding
-- scripts
-- patch
-- docs
+- `src`
+- `branding`
+- `scripts`
+- `patch`
+- `docs`
 
-IMPORTANT USER PREFERENCES
-- Deliver zip files whenever practical.
-- Put PowerShell/run commands in code blocks.
-- Match repo root directly.
-- Do not use an overlay folder.
-- Use direct .cs file replacements for substantial UI phases.
-- Keep Windows-first workflow.
+CURRENT STATUS
+- Build and packaging pipeline are stable.
+- Release folder and release zip are being produced correctly.
+- Shared Valier UI scaffolding and runtime controls now compile.
+- The old login/server-select experiment is still visually broken and should not be the main focus.
+- Current focus is reusable shared UI plumbing and first usable Valier shells.
 
-CURRENT STATE
-- Build pipeline is stable.
-- Packaged client zip output is stable.
-- Shared UI pipeline scaffolding is in place.
-- Shared asset registry scaffolding is in place.
-- Experimental login/server-select branch builds but is visually broken and is not the current focus.
-- Current focus is reusable Valier UI plumbing for persistent chat, inventory, containers, spellbook, and hotbar.
+COMPLETED PHASES
+1. Build/package stabilization
+2. Login resize experiments
+3. Broken branded login experiment
+4. Shared UI pipeline scaffolding
+5. Shared asset registry scaffolding
+6. Runtime control scaffolding
+7. Runtime art wiring helpers + first usable persistent chat shell + debug entry points
 
-DONE SO FAR
-1. Build/package pipeline stabilized.
-2. Branding/bootstrap/settings packaging stabilized.
-3. Shared UI pipeline scaffold added under Game\UI\Valier.
-4. Shared asset registry scaffold added.
-5. Phase 6 runtime controls added:
-   - ValierTextureImageControl
-   - ValierPanelControl
-   - ValierButtonControl
-   - scaffold Valier gumps
+ACTIVE DIRECTION
+Prioritize:
+1. Persistent chat
+2. Inventory/container shells
+3. Spellbook shell
+4. Hotbar shell
+5. Login reboot later, rebuilt cleanly on top of shared components
 
-NEXT WORK
-1. Wire actual prepared art into runtime controls.
-2. Implement real ValierPersistentChatGump first.
-3. Implement ValierInventoryGump and ValierContainerGump.
-4. Add reusable 9-slice or art-panel logic where needed.
-5. Return to login later with a cleaner shared-system-based reboot.
+DEBUG ENTRY POINTS AVAILABLE
+- `ClassicUO.Game.UI.Valier.ValierDebugEntryPoints.OpenPersistentChat()`
+- `ClassicUO.Game.UI.Valier.ValierDebugEntryPoints.OpenInventory()`
+- `ClassicUO.Game.UI.Valier.ValierDebugEntryPoints.OpenContainer()`
+- `ClassicUO.Game.UI.Valier.ValierDebugEntryPoints.OpenSpellbook()`
+- `ClassicUO.Game.UI.Valier.ValierDebugEntryPoints.OpenHotbar()`
 
-NOTES
-- Avoid destructive edits to source art.
-- Prefer reusable components over one-off screens.
-- Use direct file replacement zips for major UI phases.
+EXPECTED RUNTIME ART ROOT
+`Data\Client\ValierUI\`
+
+NEXT PHASE
+- Add a temporary debug hotkey or command to open the new Valier gumps in-client
+- Flesh out `ValierPersistentChatGump`
+- Start real inventory/container art pass
+- Add 9-slice or panel-frame rendering once panel art is finalized

@@ -1,23 +1,30 @@
-// SPDX-License-Identifier: BSD-2-Clause
-
 using System.IO;
 
 namespace ClassicUO.Game.UI.Valier
 {
     internal static class ValierUIRuntimePaths
     {
-        public static string BasePath => Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Client", "ValierUI");
-
-        public static string GetAbsolutePath(ValierAssetId id)
+        public static string GetRoot()
         {
-            string relative = ValierAssetCatalog.GetRelativePath(id);
+            return Path.Combine(CUOEnviroment.ExecutablePath, "Data", "Client", "ValierUI");
+        }
 
-            if (string.IsNullOrEmpty(relative))
+        public static string GetAbsoluteAssetPath(string relativePath)
+        {
+            return Path.Combine(GetRoot(), relativePath);
+        }
+
+        public static bool TryResolve(ValierAssetId assetId, out string absolutePath)
+        {
+            absolutePath = null;
+
+            if (!ValierAssetCatalog.TryGetRelativePath(assetId, out string relativePath))
             {
-                return null;
+                return false;
             }
 
-            return Path.Combine(BasePath, relative);
+            absolutePath = GetAbsoluteAssetPath(relativePath);
+            return true;
         }
     }
 }

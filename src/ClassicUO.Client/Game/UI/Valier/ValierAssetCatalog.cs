@@ -1,39 +1,24 @@
-// SPDX-License-Identifier: BSD-2-Clause
+using System.Collections.Generic;
 
 namespace ClassicUO.Game.UI.Valier
 {
     internal static class ValierAssetCatalog
     {
-        public static string GetRelativePath(ValierAssetId id)
+        private static readonly Dictionary<ValierAssetId, string> _relativePaths = new()
         {
-            return id switch
-            {
-                ValierAssetId.LoginBackground => @"Login\background.png",
-                ValierAssetId.LoginFrame => @"Frames\login-frame.png",
-                ValierAssetId.ServerSelectionFrame => @"Frames\server-frame.png",
+            { ValierAssetId.ChatPanel, "Chat/persistent_chat_panel.png" },
+            { ValierAssetId.InventoryPanel, "Inventory/inventory_panel.png" },
+            { ValierAssetId.ContainerPanel, "Inventory/container_panel.png" },
+            { ValierAssetId.SpellbookShell, "Spellbook/spellbook_shell.png" },
+            { ValierAssetId.HotbarPanel, "Hotbar/hotbar_panel.png" },
+            { ValierAssetId.PrimaryButton, "Buttons/primary_button.png" },
+            { ValierAssetId.SecondaryButton, "Buttons/secondary_button.png" },
+            { ValierAssetId.DangerButton, "Buttons/danger_button.png" }
+        };
 
-                ValierAssetId.ChatPanel => @"Chat\chat-panel.png",
-                ValierAssetId.InventoryPanel => @"Inventory\inventory-panel.png",
-                ValierAssetId.ContainerPanel => @"Inventory\container-panel.png",
-                ValierAssetId.SpellbookPanel => @"Spellbook\spellbook-panel.png",
-                ValierAssetId.HotbarPanel => @"Hotbar\hotbar-panel.png",
-
-                ValierAssetId.PrimaryButtonNormal => @"Buttons\primary-normal.png",
-                ValierAssetId.PrimaryButtonHover => @"Buttons\primary-hover.png",
-                ValierAssetId.PrimaryButtonPressed => @"Buttons\primary-pressed.png",
-
-                ValierAssetId.SecondaryButtonNormal => @"Buttons\secondary-normal.png",
-                ValierAssetId.SecondaryButtonHover => @"Buttons\secondary-hover.png",
-                ValierAssetId.SecondaryButtonPressed => @"Buttons\secondary-pressed.png",
-
-                ValierAssetId.DangerButtonNormal => @"Buttons\danger-normal.png",
-                ValierAssetId.DangerButtonHover => @"Buttons\danger-hover.png",
-                ValierAssetId.DangerButtonPressed => @"Buttons\danger-pressed.png",
-
-                ValierAssetId.IconLogoSmall => @"Icons\logo-small.png",
-                ValierAssetId.IconLogoLarge => @"Icons\logo-large.png",
-                _ => null
-            };
+        public static bool TryGetRelativePath(ValierAssetId id, out string relativePath)
+        {
+            return _relativePaths.TryGetValue(id, out relativePath);
         }
     }
 }

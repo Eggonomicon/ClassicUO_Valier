@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: BSD-2-Clause
-
 using ClassicUO.Game.UI.Controls;
 using ClassicUO.Game.UI.Valier;
 
@@ -10,14 +8,14 @@ namespace ClassicUO.Game.UI.Gumps.Valier
         public ValierSpellbookGump(World world) : base(world, 0, 0)
         {
             CanMove = true;
-            CanCloseWithRightClick = true;
 
-            Add(new ValierPanelControl(ValierAssetId.SpellbookPanel, ValierTheme.SpellbookWidth, ValierTheme.SpellbookHeight));
-            Add(new Label("Valier Spellbook", false, 0x0481, font: 9) { X = 16, Y = 12 });
-            Add(new AlphaBlendControl(0.35f) { X = 14, Y = 42, Width = ValierTheme.SpellbookWidth - 28, Height = ValierTheme.SpellbookHeight - 56 });
+            Add(new ValierPanelControl(ValierAssetId.SpellbookShell, 420, 520));
+            Add(new Label("Valier Spellbook", false, ValierTheme.TextHue, font: 9) { X = 18, Y = 14 });
+            Add(new AlphaBlendControl(0.55f) { X = 18, Y = 42, Width = 384, Height = 450 });
+            Add(new Label("Spellbook shell scaffold", false, ValierTheme.TextHue, font: 9) { X = 28, Y = 56 });
 
-            X = 60;
-            Y = 80;
+            X = ValierTheme.ScreenMargin + 40;
+            Y = ValierTheme.ScreenMargin + 40;
         }
     }
 }

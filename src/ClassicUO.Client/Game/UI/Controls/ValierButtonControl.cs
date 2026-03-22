@@ -1,62 +1,29 @@
-// SPDX-License-Identifier: BSD-2-Clause
-
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Valier;
 using ClassicUO.Input;
 using ClassicUO.Renderer;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace ClassicUO.Game.UI.Controls
 {
-    internal sealed class ValierButtonControl : Control
+    internal class ValierButtonControl : Control
     {
-        private bool _isHovered;
-        private bool _isPressed;
+        private readonly Action<int> _onClick;
 
-        public ValierButtonControl(int buttonId, ValierAssetId normal, ValierAssetId hover, ValierAssetId pressed, int width = 0, int height = 0)
+        public ValierButtonControl(int buttonId, ValierAssetId assetId, int width, int height, Action<int> onClick = null)
         {
-            ButtonID = buttonId;
-            NormalAsset = normal;
-            HoverAsset = hover;
-            PressedAsset = pressed;
+            ButtonId = buttonId;
+            AssetId = assetId;
             Width = width;
             Height = height;
+            _onClick = onClick;
             AcceptMouseInput = true;
-            CanMove = false;
         }
 
-        public int ButtonID { get; }
-        public ValierAssetId NormalAsset { get; set; }
-        public ValierAssetId HoverAsset { get; set; }
-        public ValierAssetId PressedAsset { get; set; }
-
-        public override bool Contains(int x, int y)
-        {
-            return !IsDisposed && new Rectangle(0, 0, Width, Height).Contains(x, y);
-        }
-
-        protected override void OnMouseEnter(int x, int y)
-        {
-            base.OnMouseEnter(x, y);
-            _isHovered = true;
-        }
-
-        protected override void OnMouseExit(int x, int y)
-        {
-            base.OnMouseExit(x, y);
-            _isHovered = false;
-            _isPressed = false;
-        }
-
-        protected override void OnMouseDown(int x, int y, MouseButtonType button)
-        {
-            base.OnMouseDown(x, y, button);
-
-            if (button == MouseButtonType.Left)
-            {
-                _isPressed = true;
-            }
-        }
+        public int ButtonId { get; }
+        public ValierAssetId AssetId { get; set; }
 
         protected override void OnMouseUp(int x, int y, MouseButtonType button)
         {
@@ -64,13 +31,8 @@ namespace ClassicUO.Game.UI.Controls
 
             if (button == MouseButtonType.Left)
             {
-                bool shouldActivate = _isPressed;
-                _isPressed = false;
-
-                if (shouldActivate)
-                {
-                    OnButtonClick(ButtonID);
-                }
+                _onClick?.Invoke(ButtonId);
+                OnButtonClick(ButtonId);
             }
         }
 
@@ -83,25 +45,31 @@ namespace ClassicUO.Game.UI.Controls
                 return false;
             }
 
-            ValierAssetId asset = _isPressed ? PressedAsset : (_isHovered ? HoverAsset : NormalAsset);
-
-            if (ValierTextureCache.TryGet(asset, out var texture))
+            if (ValierTextureCache.TryGet(AssetId, out Texture2D texture))
             {
-                int drawWidth = Width > 0 ? Width : texture.Width;
-                int drawHeight = Height > 0 ? Height : texture.Height;
-
-                if (Width <= 0) Width = texture.Width;
-                if (Height <= 0) Height = texture.Height;
-
                 Vector3 hueVector = ShaderHueTranslator.GetHueVector(0, false, Alpha, true);
+                Rectangle source = new Rectangle(0, 0, texture.Width, texture.Height);
 
-                renderLists.AddGumpNoAtlas(
-                    batcher =>
-                    {
-                        batcher.Draw(texture, new Rectangle(x, y, drawWidth, drawHeight), hueVector, layerDepth);
-                        return true;
-                    }
-                );
+                renderLists.AddGumpNoAtlas(batcher =>
+                {
+                    batcher.Draw(texture, new Rectangle(x, y, Width, Height), source, hueVector, layerDepth);
+                    return true;
+                });
+            }
+            else
+            {
+                Vector3 hueVector = ShaderHueTranslator.GetHueVector(0, false, MouseIsOver ? 1.0f : 0.8f, true);
+
+                renderLists.AddGumpNoAtlas(batcher =>
+                {
+                    batcher.Draw(
+                        SolidColorTextureCache.GetTexture(MouseIsOver ? Color.DarkGoldenrod : Color.DarkSlateGray),
+                        new Rectangle(x, y, Width, Height),
+                        hueVector,
+                        layerDepth
+                    );
+                    return true;
+                });
             }
 
             return base.AddToRenderLists(renderLists, x, y, ref layerDepthRef);

@@ -1,34 +1,17 @@
-// SPDX-License-Identifier: BSD-2-Clause
+using System;
 
 namespace ClassicUO.Game.UI.Valier
 {
     internal enum ValierAssetId
     {
         None = 0,
-
-        LoginBackground,
-        LoginFrame,
-        ServerSelectionFrame,
-
         ChatPanel,
         InventoryPanel,
         ContainerPanel,
-        SpellbookPanel,
+        SpellbookShell,
         HotbarPanel,
-
-        PrimaryButtonNormal,
-        PrimaryButtonHover,
-        PrimaryButtonPressed,
-
-        SecondaryButtonNormal,
-        SecondaryButtonHover,
-        SecondaryButtonPressed,
-
-        DangerButtonNormal,
-        DangerButtonHover,
-        DangerButtonPressed,
-
-        IconLogoSmall,
-        IconLogoLarge
+        PrimaryButton,
+        SecondaryButton,
+        DangerButton
     }
 }
