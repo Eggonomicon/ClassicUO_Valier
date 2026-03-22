@@ -5,29 +5,74 @@ namespace ClassicUO.Game.UI.Valier
 {
     internal static class ValierDebugEntryPoints
     {
-        public static void OpenPersistentChat()
+        public static void TogglePersistentChat()
         {
-            UIManager.Add(new ValierPersistentChatGump(Client.Game.UO.World));
+            var existing = UIManager.GetGump<ValierPersistentChatGump>();
+
+            if (existing != null)
+            {
+                existing.Dispose();
+            }
+            else
+            {
+                UIManager.Add(new ValierPersistentChatGump(Client.Game.UO.World));
+            }
         }
 
-        public static void OpenInventory()
+        public static void ToggleInventory()
         {
-            UIManager.Add(new ValierInventoryGump(Client.Game.UO.World));
+            var existing = UIManager.GetGump<ValierInventoryGump>();
+
+            if (existing != null)
+            {
+                existing.Dispose();
+            }
+            else
+            {
+                UIManager.Add(new ValierInventoryGump(Client.Game.UO.World));
+            }
         }
 
-        public static void OpenContainer()
+        public static void ToggleContainer()
         {
-            UIManager.Add(new ValierContainerGump(Client.Game.UO.World));
+            var existing = UIManager.GetGump<ValierContainerGump>();
+
+            if (existing != null)
+            {
+                existing.Dispose();
+            }
+            else
+            {
+                UIManager.Add(new ValierContainerGump(Client.Game.UO.World));
+            }
         }
 
-        public static void OpenSpellbook()
+        public static void ToggleSpellbook()
         {
-            UIManager.Add(new ValierSpellbookGump(Client.Game.UO.World));
+            var existing = UIManager.GetGump<ValierSpellbookGump>();
+
+            if (existing != null)
+            {
+                existing.Dispose();
+            }
+            else
+            {
+                UIManager.Add(new ValierSpellbookGump(Client.Game.UO.World));
+            }
         }
 
-        public static void OpenHotbar()
+        public static void ToggleHotbar()
         {
-            UIManager.Add(new ValierHotbarGump(Client.Game.UO.World));
+            var existing = UIManager.GetGump<ValierHotbarGump>();
+
+            if (existing != null)
+            {
+                existing.Dispose();
+            }
+            else
+            {
+                UIManager.Add(new ValierHotbarGump(Client.Game.UO.World));
+            }
         }
     }
 }

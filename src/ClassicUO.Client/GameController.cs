@@ -7,6 +7,7 @@ using ClassicUO.Game.GameObjects;
 using ClassicUO.Game.Managers;
 using ClassicUO.Game.Scenes;
 using ClassicUO.Game.UI.Gumps;
+using ClassicUO.Game.UI.Valier;
 using ClassicUO.Input;
 using ClassicUO.Network;
 using ClassicUO.Network.Encryption;
@@ -244,16 +245,6 @@ namespace ClassicUO
 
         public void SetWindowSize(int width, int height)
         {
-            //width = (int) ((double) width * Client.Game.GraphicManager.PreferredBackBufferWidth / Client.Game.Window.ClientBounds.Width);
-            //height = (int) ((double) height * Client.Game.GraphicManager.PreferredBackBufferHeight / Client.Game.Window.ClientBounds.Height);
-
-            /*if (CUOEnviroment.IsHighDPI)
-            {
-                width *= 2;
-                height *= 2;
-            }
-            */
-
             GraphicManager.PreferredBackBufferWidth = width;
             GraphicManager.PreferredBackBufferHeight = height;
             GraphicManager.ApplyChanges();
@@ -353,19 +344,17 @@ namespace ClassicUO
                 var displayId = SDL_GetDisplayForPoint(ref desiredStartPoint);
                 if (displayId <= 0)
                 {
-                    // Make sure the window is actually in view and not out of bounds
                     SetWindowPosition(left, top);
                 }
 
                 var boundsRetrieved = SDL_GetDisplayUsableBounds(displayId, out SDL_Rect displayBounds);
                 if (!boundsRetrieved)
                 {
-                    return; // we have no clue - the user is unfortunately on their own
+                    return;
                 }
 
                 if (x < displayBounds.x || x >= displayBounds.x + displayBounds.w)
                 {
-                    // Make sure the window is actually in view and not out of bounds
                     x = left + displayBounds.x;
                 }
 
@@ -588,8 +577,6 @@ namespace ClassicUO
 
         private bool HandleSdlEvent(IntPtr userData, SDL_Event* sdlEvent)
         {
-            // Don't pass SDL events to the plugin host before the plugins are initialized
-            // or the garbage collector can get screwed up
             if (_pluginsInitialized && Plugin.ProcessWndProc(sdlEvent) != 0)
             {
                 if ((SDL_EventType)sdlEvent->type == SDL_EventType.SDL_EVENT_MOUSE_MOTION)
@@ -607,12 +594,10 @@ namespace ClassicUO
             {
                 case SDL_EventType.SDL_EVENT_AUDIO_DEVICE_ADDED:
                     Console.WriteLine("AUDIO ADDED: {0}", sdlEvent->adevice.which);
-
                     break;
 
                 case SDL_EventType.SDL_EVENT_AUDIO_DEVICE_REMOVED:
                     Console.WriteLine("AUDIO REMOVED: {0}", sdlEvent->adevice.which);
-
                     break;
 
                 case SDL_EventType.SDL_EVENT_WINDOW_MOUSE_ENTER:
@@ -634,6 +619,37 @@ namespace ClassicUO
                 case SDL_EventType.SDL_EVENT_KEY_DOWN:
 
                     Keyboard.OnKeyDown(sdlEvent->key);
+
+                    if (Keyboard.Ctrl && Keyboard.Shift)
+                    {
+                        switch ((SDL_Keycode)sdlEvent->key.key)
+                        {
+                            case SDL_Keycode.SDLK_F6:
+                                ValierDebugEntryPoints.TogglePersistentChat();
+                                _ignoreNextTextInput = true;
+                                return true;
+
+                            case SDL_Keycode.SDLK_F7:
+                                ValierDebugEntryPoints.ToggleInventory();
+                                _ignoreNextTextInput = true;
+                                return true;
+
+                            case SDL_Keycode.SDLK_F8:
+                                ValierDebugEntryPoints.ToggleContainer();
+                                _ignoreNextTextInput = true;
+                                return true;
+
+                            case SDL_Keycode.SDLK_F9:
+                                ValierDebugEntryPoints.ToggleSpellbook();
+                                _ignoreNextTextInput = true;
+                                return true;
+
+                            case SDL_Keycode.SDLK_F10:
+                                ValierDebugEntryPoints.ToggleHotbar();
+                                _ignoreNextTextInput = true;
+                                return true;
+                        }
+                    }
 
                     if (
                         Plugin.ProcessHotkeys(
@@ -683,17 +699,6 @@ namespace ClassicUO
                         break;
                     }
 
-                    // Fix for linux OS: https://github.com/andreakarasho/ClassicUO/pull/1263
-                    // Fix 2: SDL owns this behaviour. Cheating is not a real solution.
-                    /*if (!Utility.Platforms.PlatformHelper.IsWindows)
-                    {
-                        if (Keyboard.Alt || Keyboard.Ctrl)
-                        {
-                            break;
-                        }
-                    }*/
-
-                    /* We get to do strlen ourselves! */
                     byte* ptr = sdlEvent->text.text;
                     while (*ptr != 0)
                     {
@@ -749,36 +754,25 @@ namespace ClassicUO
                 case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN:
                 {
                     SDL_MouseButtonEvent mouse = sdlEvent->button;
-
-                    // The values in MouseButtonType are chosen to exactly match the SDL values
                     MouseButtonType buttonType = (MouseButtonType)mouse.button;
-
                     uint lastClickTime = 0;
 
                     switch (buttonType)
                     {
                         case MouseButtonType.Left:
                             lastClickTime = Mouse.LastLeftButtonClickTime;
-
                             break;
-
                         case MouseButtonType.Middle:
                             lastClickTime = Mouse.LastMidButtonClickTime;
-
                             break;
-
                         case MouseButtonType.Right:
                             lastClickTime = Mouse.LastRightButtonClickTime;
-
                             break;
-
                         case MouseButtonType.XButton1:
                         case MouseButtonType.XButton2:
                             break;
-
                         default:
                             Log.Warn($"No mouse button handled: {mouse.button}");
-
                             break;
                     }
 
@@ -829,17 +823,12 @@ namespace ClassicUO
                     {
                         case MouseButtonType.Left:
                             Mouse.LastLeftButtonClickTime = lastClickTime;
-
                             break;
-
                         case MouseButtonType.Middle:
                             Mouse.LastMidButtonClickTime = lastClickTime;
-
                             break;
-
                         case MouseButtonType.Right:
                             Mouse.LastRightButtonClickTime = lastClickTime;
-
                             break;
                     }
 
@@ -849,32 +838,22 @@ namespace ClassicUO
                 case SDL_EventType.SDL_EVENT_MOUSE_BUTTON_UP:
                 {
                     SDL_MouseButtonEvent mouse = sdlEvent->button;
-
-                    // The values in MouseButtonType are chosen to exactly match the SDL values
                     MouseButtonType buttonType = (MouseButtonType)mouse.button;
-
                     uint lastClickTime = 0;
 
                     switch (buttonType)
                     {
                         case MouseButtonType.Left:
                             lastClickTime = Mouse.LastLeftButtonClickTime;
-
                             break;
-
                         case MouseButtonType.Middle:
                             lastClickTime = Mouse.LastMidButtonClickTime;
-
                             break;
-
                         case MouseButtonType.Right:
                             lastClickTime = Mouse.LastRightButtonClickTime;
-
                             break;
-
                         default:
                             Log.Warn($"No mouse button handled: {mouse.button}");
-
                             break;
                     }
 
@@ -897,13 +876,8 @@ namespace ClassicUO
                 case SDL_EventType.SDL_EVENT_WINDOW_DISPLAY_SCALE_CHANGED:
                 case SDL_EventType.SDL_EVENT_WINDOW_DISPLAY_CHANGED:
                 {
-                    // when starting scaled, SDL will raise the scale changed event before the window has properly loaded and the previous scale set
                     if (_displayScale != 0 && _displayScale != DpiScale)
                     {
-                        // The effective DPI scale has changed. SDL handles the window content automatically
-                        // but we need to make sure to resize the window properly
-                        // This is especially important when the window size is restricted, for example
-                        // in the LoginScene
                         WindowOnClientSizeChanged(
                             Client.Game.ScaleWithDpi(Window.ClientBounds.Width, previousDpi: _displayScale),
                             Client.Game.ScaleWithDpi(Window.ClientBounds.Height, previousDpi: _displayScale)
@@ -929,7 +903,6 @@ namespace ClassicUO
         protected override void OnExiting(object sender, EventArgs args)
         {
             Scene?.Dispose();
-
             base.OnExiting(sender, args);
         }
 
