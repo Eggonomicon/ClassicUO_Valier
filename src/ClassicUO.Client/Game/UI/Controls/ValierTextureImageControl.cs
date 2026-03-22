@@ -55,3 +55,4 @@ namespace ClassicUO.Game.UI.Controls
             return base.AddToRenderLists(renderLists, x, y, ref layerDepthRef);
         }
     }
+}
